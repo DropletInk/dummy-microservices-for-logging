@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  service-a:
+    build: ./service-a
+    container_name: service-a
+    logging:
+      driver: "journald"
+  service-b:
+    build: ./service-b
+    container_name: service-b
+    logging:
+      driver: "journald"
+  service-c:
+    build: ./service-c
+    container_name: service-c
+    restart: always
+    logging:
+      driver: "journald"
