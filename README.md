@@ -101,7 +101,7 @@ journalctl CONTAINER_NAME=service-a \
            CONTAINER_NAME=service-c \
            -f
 ```
-##Example output:
+## Example output:
 
 <img width="806" height="130" alt="image" src="https://github.com/user-attachments/assets/123dfcea-9f70-4214-a884-9c036bc7e148" />
 
