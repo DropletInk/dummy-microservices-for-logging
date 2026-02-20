@@ -1,26 +1,29 @@
-import json
+import logging
 import time
 import random
-import logging
+import sys
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)s | service-b | %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler("/logs/service-b.log")
+    ]
+)
 
-SERVICE_NAME = "service-b"
+logger = logging.getLogger("service-b")
 
-def log(level: str, message: str):
-    record = {
-        "service": SERVICE_NAME,
-        "level": level,
-        "message": message
-    }
-    print(json.dumps(record), flush=True)
+def run():
+    while True:
+        value = random.randint(1, 10)
+
+        if value > 7:
+            logger.warning(f"High value detected: {value}")
+        else:
+            logger.info(f"Normal value: {value}")
+
+        time.sleep(4)
 
 if __name__ == "__main__":
-    while True:
-        # Simulate different log levels
-        if random.choice([True, False]):
-            log("DEBUG", "Random diagnostic message")
-        else:
-            log("WARN", "Potential issue detected")
-
-        time.sleep(5)
+    run()

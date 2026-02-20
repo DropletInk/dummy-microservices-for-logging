@@ -1,28 +1,32 @@
-import json
-import time
 import logging
+import time
+import random
+import sys
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)s | service-c | %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler("/logs/service-c.log")
+    ]
+)
 
-SERVICE_NAME = "service-c"
+logger = logging.getLogger("service-c")
 
-def log(level: str, message: str):
-    record = {
-        "service": SERVICE_NAME,
-        "level": level,
-        "message": message
-    }
-    print(json.dumps(record), flush=True)
+def run():
+    while True:
+        x = random.randint(1, 5)
+
+        try:
+            if x == 3:
+                raise Exception("Simulated failure")
+            logger.info(f"Task completed successfully with value {x}")
+
+        except Exception as e:
+            logger.error(f"Error occurred: {e}")
+
+        time.sleep(5)
 
 if __name__ == "__main__":
-    counter = 0
-
-    while True:
-        counter += 1
-
-        if counter % 3 == 0:
-            log("ERROR", "Simulated failure while processing request")
-        else:
-            log("INFO", "Service is processing requests normally")
-
-        time.sleep(6)
+    run()
