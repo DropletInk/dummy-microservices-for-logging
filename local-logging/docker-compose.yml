@@ -1,0 +1,11 @@
+services:
+  fluent-bit:
+    image: fluent/fluent-bit:2.2
+    container_name: local-fluent-bit
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./logs:/var/log/fluentbit
+    command: -c /fluent-bit/etc/fluent-bit.conf
