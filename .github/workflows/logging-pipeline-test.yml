@@ -1,23 +1,25 @@
 ---
-name: Logging Pipeline Test
+name: Local Logging Pipeline Test
 
 on:
   push:
   pull_request:
 
 jobs:
-  test-logging-pipeline:
+  test-local-logging:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build containers
-        run: docker compose build
+      - name: Start services
+        run: docker compose up -d --build
 
-      - name: Start logging pipeline
-        run: docker compose up -d
+      - name: Start local logging agent
+        run: |
+          cd local-logging/fluent-bit
+          docker compose up -d
 
       - name: Wait for services
         run: sleep 10
@@ -26,10 +28,7 @@ jobs:
         run: bash tests/inject_logs.sh
 
       - name: Verify logs
-        run: bash tests/verify_pipeline.sh
+        run: bash tests/verify_local_logs.sh
 
       - name: Stop containers
         run: docker compose down
-
-
-#for test
