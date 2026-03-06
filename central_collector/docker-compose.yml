@@ -7,3 +7,5 @@ services:
       - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
     command: -c /fluent-bit/etc/fluent-bit.conf
     restart: always
+
+#new compose
