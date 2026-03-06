@@ -1,0 +1,31 @@
+name: Logging Pipeline Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-logging-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build containers
+        run: docker compose build
+
+      - name: Start logging pipeline
+        run: docker compose up -d
+
+      - name: Wait for services
+        run: sleep 10
+
+      - name: Inject logs
+        run: bash tests/inject_logs.sh
+
+      - name: Verify logs
+        run: bash tests/verify_pipeline.sh
+
+      - name: Stop containers
+        run: docker compose down
