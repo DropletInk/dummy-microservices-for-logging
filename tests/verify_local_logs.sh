@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOG_DIR="local-logging/fluent-bit/logs"
+LOG_DIR="local-logging/logs"
 
 echo "Checking logs collected by local logging agent..."
 
