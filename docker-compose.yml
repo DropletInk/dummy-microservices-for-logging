@@ -1,0 +1,14 @@
+services:
+  service-a:
+    build: ./service-a
+    container_name: service-a-test
+
+  service-b:
+    build: ./service-b
+    container_name: service-b-test
+
+  service-c:
+    build: ./service-c
+    container_name: service-c-test
+
+  
