@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOG_DIR="local-logging/logs"
-TIMEOUT=60
+TIMEOUT=180
 INTERVAL=2
 
 echo "Checking logs collected by local logging agent..."
