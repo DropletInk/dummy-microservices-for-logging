@@ -27,12 +27,16 @@ jobs:
       - name: Inject logs
         run: bash tests/inject_logs.sh
 
+      - name: Check container logging driver
+        run: |
+          docker inspect service-a-test | grep LogConfig -A 5
+          
       - name: Wait for Fluent Bit to collect logs
         run: sleep 10
 
       - name: Wait for log files
         run: bash tests/log_files.sh
-        
+
       - name: Show logs directory
         run: |
           echo "Listing log files..."
