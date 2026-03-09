@@ -30,6 +30,9 @@ jobs:
       - name: Wait for Fluent Bit to collect logs
         run: sleep 10
 
+      - name: Wait for log files
+        run: bash tests/log_files.sh
+        
       - name: Show logs directory
         run: |
           echo "Listing log files..."
@@ -37,7 +40,7 @@ jobs:
 
       - name: Show Fluent Bit container logs
         run: docker logs local-fluent-bit || true
-
+    
       - name: Verify logs
         run: bash tests/verify_local_logs.sh
 
