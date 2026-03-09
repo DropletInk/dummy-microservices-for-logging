@@ -1,44 +1,39 @@
 #!/bin/bash
 
 LOG_DIR="local-logging/logs"
+TIMEOUT=60
+INTERVAL=2
 
 echo "Checking logs collected by local logging agent..."
 
-# Wait until log files appear
-echo "Waiting for log files..."
+wait_for_log() {
+  local pattern=$1
+  local service=$2
+  local elapsed=0
 
-for i in {1..20}; do
-  if [ -d "$LOG_DIR" ] && [ "$(ls -A $LOG_DIR)" ]; then
-    break
-  fi
-  sleep 2
-done
+  echo "Waiting for $service logs..."
 
-echo "Log directory contents:"
-ls -R "$LOG_DIR"
+  while [ $elapsed -lt $TIMEOUT ]; do
+    if grep -r "$pattern" "$LOG_DIR" >/dev/null 2>&1; then
+      echo "$service log found"
+      return 0
+    fi
 
-# Check Service A
-if grep -r "TEST_LOG_A" "$LOG_DIR"; then
-  echo "Service A log found"
-else
-  echo "Service A log missing"
-  exit 1
-fi
+    sleep $INTERVAL
+    elapsed=$((elapsed + INTERVAL))
+  done
 
-# Check Service B
-if grep -r "TEST_LOG_B" "$LOG_DIR"; then
-  echo "Service B log found"
-else
-  echo "Service B log missing"
-  exit 1
-fi
+  echo "$service log missing after ${TIMEOUT}s"
+  return 1
+}
 
-# Check Service C
-if grep -r "TEST_LOG_C" "$LOG_DIR"; then
-  echo "Service C log found"
-else
-  echo "Service C log missing"
-  exit 1
-fi
+# Show log directory for debugging
+echo "Listing log files..."
+ls -R "$LOG_DIR" || true
+
+# Check logs
+wait_for_log "TEST_LOG_A" "Service A" || exit 1
+wait_for_log "TEST_LOG_B" "Service B" || exit 1
+wait_for_log "TEST_LOG_C" "Service C" || exit 1
 
 echo "Local logging pipeline test passed"
