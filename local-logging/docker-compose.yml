@@ -10,4 +10,4 @@ services:
       - ./logs:/var/log/fluentbit
     command: -c /fluent-bit/etc/fluent-bit.conf
 
-#for test
+#for test lol
