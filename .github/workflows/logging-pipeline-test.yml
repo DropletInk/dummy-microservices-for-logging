@@ -21,9 +21,6 @@ jobs:
           sudo systemctl restart docker
           sleep 10
       
-      - name: Create log folder
-        run: mkdir /local-logging/logs
-
       - name: Start all containers
         run: docker compose up -d --build
 
