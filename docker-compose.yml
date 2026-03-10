@@ -13,15 +13,15 @@ services:
   #     - ./logging-test/dind/daemon.json:/etc/docker/daemon.json
 
   service-a:
-    build: ./service-a
+    build: ./services/service-a
     container_name: service-a-test
 
   service-b:
-    build: ./service-b
+    build: ./services/service-b
     container_name: service-b-test
 
   service-c:
-    build: ./service-c
+    build: ./services/service-c
     container_name: service-c-test
 
   fluent-bit:
