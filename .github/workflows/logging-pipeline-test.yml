@@ -2,9 +2,6 @@ name: Test Local Logging Pipeline
 
 on:
   push:
-    branches:
-      - ci-test
-      - main
   pull_request:
 
 jobs:
