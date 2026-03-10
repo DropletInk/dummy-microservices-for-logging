@@ -2,10 +2,14 @@
 
 echo "Injecting logs..."
 
-# Write via the container's own shell to ensure it goes through the logging driver
-docker exec service-a-test sh -c 'echo TEST_LOG_A > /proc/1/fd/1'
-docker exec service-b-test sh -c 'echo TEST_LOG_B > /proc/1/fd/1'
-docker exec service-c-test sh -c 'echo TEST_LOG_C > /proc/1/fd/1'
+# Auto discover all services
+SERVICES=$(docker config --services | grep -v fluent-bit)
+
+for SERVICE in $SERVICES; do
+  CONTAINER="${SERVICE}-test"
+  echo "Injecting log into $CONTAINER"
+  docker exec "$CONTAINER" sh -c "echo TEST_LOG_${SERVICE^^} > /prod/1/fd/1"
+done
 # Give fluentd driver time to forward
 sleep 2
 echo "Logs injected"

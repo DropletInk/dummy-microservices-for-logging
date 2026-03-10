@@ -1,10 +1,4 @@
-#!/bin/bash
-
-LOG_DIR="local-logging/logs"
-TIMEOUT=180
-INTERVAL=2
-
-echo "Checking logs collected by local logging agent..."
+SERVICES=$(docker compose config --services | grep -v fluent-bit)
 
 wait_for_log() {
   local pattern=$1
@@ -27,13 +21,18 @@ wait_for_log() {
   return 1
 }
 
-# Show log directory for debugging
 echo "Listing log files..."
 ls -R "$LOG_DIR" || true
 
-# Check logs
-wait_for_log "TEST_LOG_A" "Service A" || exit 1
-wait_for_log "TEST_LOG_B" "Service B" || exit 1
-wait_for_log "TEST_LOG_C" "Service C" || exit 1
+# Dynamically check each service
+for SERVICE in $SERVICES; do
+  PATTERN="TEST_LOG_${SERVICE^^}"
+  wait_for_log "$PATTERN" "$SERVICE" || FAILED=1
+done
 
-echo "Local logging pipeline test passed"
+if [ $FAILED -eq 1 ]; then
+  echo "Some logs missing — pipeline test FAILED"
+  exit 1
+fi
+
+echo "All logs verified — local logging pipeline test passed"
