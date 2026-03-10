@@ -1,14 +1,35 @@
 services:
+
+  # dind:
+  #   image: docker:24-dind
+  #   container_name: dind-daemon
+  #   privileged: true
+  #   environment:
+  #     DOCKER_TLS_CERTDIR: ""
+  #   command: --host=tcp://0.0.0.0:2375
+  #   ports:
+  #     - "2375:2375"
+  #   volumes:
+  #     - ./logging-test/dind/daemon.json:/etc/docker/daemon.json
+
   service-a:
-    build: ./service-a
+    build: ./services/service-a
     container_name: service-a-test
 
   service-b:
-    build: ./service-b
+    build: ./services/service-b
     container_name: service-b-test
 
   service-c:
-    build: ./service-c
+    build: ./services/service-c
     container_name: service-c-test
 
-  
+  fluent-bit:
+    image: fluent/fluent-bit:2.2
+    container_name: local-fluent-bit
+    network_mode: host
+    volumes:
+      - ./local-logging/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./local-logging/logs:/var/log/fluentbit
+    command: -c /fluent-bit/etc/fluent-bit.conf
+ 
