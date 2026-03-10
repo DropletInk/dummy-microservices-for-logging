@@ -1,0 +1,61 @@
+name: Test Local Logging Pipeline
+
+on:
+  push:
+    branches:
+      - ci-test
+      - main
+  pull_request:
+
+jobs:
+  test-local-logging:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Configure Docker daemon for fluentd logging driver
+        run: |
+          sudo cp local-logging/daemon.json /etc/docker/daemon.json || true
+          sudo systemctl restart docker || true
+          sleep 15
+      
+      - name: Start all containers
+        run: docker compose up -d --build || true
+
+      - name: Wait for services to be ready
+        run: sleep 10
+      
+      - name: Wait for log files
+        run: bash tests/log_files.sh
+
+      - name: Inject logs
+        run: bash tests/inject_logs.sh
+
+      - name: Check container logging driver
+        run: |
+          docker inspect service-a-test | grep LogConfig -A 5
+          
+      - name: Wait for Fluent Bit to collect logs
+        run: sleep 10
+
+      - name: Show logs directory
+        run: |
+          echo "Listing log files..."
+          ls -R local-logging/logs || true
+
+      - name: Show Fluent Bit container logs
+        run: docker logs local-fluent-bit || true
+    
+      - name: Verify logs
+        run: bash tests/verify_local_logs.sh
+
+      - name: Stop microservices
+        if: always()
+        run: docker compose down || true
+
+      - name: Stop local logging agent
+        if: always()
+        working-directory: local-logging/fluent-bit
+        run: docker compose down || true

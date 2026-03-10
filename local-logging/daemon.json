@@ -1,0 +1,8 @@
+{
+  "log-driver": "fluentd",
+  "log-opts": {
+    "fluentd-address": "tcp://127.0.0.1:24223",
+    "fluentd-async": "true",
+    "tag": "{{.Name}}"
+  }
+}
