@@ -1,7 +1,7 @@
 {
   "log-driver": "fluentd",
   "log-opts": {
-    "fluentd-address": "fluent-bit:24224",
+    "fluentd-address": "tcp://127.0.0.1:24224",
     "tag": "{{.Name}}"
   }
 }

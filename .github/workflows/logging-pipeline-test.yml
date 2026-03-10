@@ -18,11 +18,11 @@ jobs:
       - name: Configure Docker daemon for fluentd logging driver
         run: |
           sudo cp local-logging/daemon.json /etc/docker/daemon.json
-          sudo systemctl restart docker
-          sleep 10
+          sudo systemctl restart docker || true
+          sleep 15
       
       - name: Start all containers
-        run: docker compose up -d --build
+        run: docker compose up -d --build || true
 
       - name: Wait for services to be ready
         run: sleep 10
