@@ -7,17 +7,22 @@ ELAPSED=0
 
 echo "Waiting for Fluent Bit to create log files..."
 
-while [ $ELAPSED -lt $TIMEOUT ]; do
-    if [ -d "$LOG_DIR" ] && [ "$(ls -A "$LOG_DIR" 2>/dev/null)" ]; then
-        echo "Log files detected:"
-        ls -l "$LOG_DIR"
-        exit 0
-    fi
+SERVICES=$(docker compose config --services | grep -v fluent-bit)
+EXPECTED=$(echo "$SERVICES" | wc -l | tr -d ' ')
 
-    sleep $INTERVAL
-    ELAPSED=$((ELAPSED + INTERVAL))
-    echo "Still waiting... (${ELAPSED}s)"
+while [ $ELAPSED -lt $TIMEOUT ]; do
+  FOUND=$(ls "$LOG_DIR" 2>/dev/null | wc -l | tr -d ' ')
+
+  if [ "$FOUND" -ge "$EXPECTED" ]; then
+    echo "All $EXPECTED log files detected:"
+    ls -l "$LOG_DIR"
+    exit 0
+  fi
+
+  sleep $INTERVAL
+  ELAPSED=$((ELAPSED + INTERVAL))
+  echo "Still waiting... found $FOUND/$EXPECTED files (${ELAPSED}s)"
 done
 
-echo "ERROR: No log files created after ${TIMEOUT}s"
+echo "ERROR: Only $FOUND/$EXPECTED log files created after ${TIMEOUT}s"
 exit 1

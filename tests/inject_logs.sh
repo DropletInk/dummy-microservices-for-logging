@@ -2,10 +2,19 @@
 
 echo "Injecting logs..."
 
-# Write via the container's own shell to ensure it goes through the logging driver
-docker exec service-a-test sh -c 'echo TEST_LOG_A > /proc/1/fd/1'
-docker exec service-b-test sh -c 'echo TEST_LOG_B > /proc/1/fd/1'
-docker exec service-c-test sh -c 'echo TEST_LOG_C > /proc/1/fd/1'
-# Give fluentd driver time to forward
+SERVICES=$(docker compose config --services 2>/dev/null | grep -v fluent-bit)
+
+if [ -z "$SERVICES" ]; then
+  echo "ERROR: Could not discover services from docker-compose"
+  exit 1
+fi
+
+for SERVICE in $SERVICES; do
+  CONTAINER="${SERVICE}-test"
+  LOG_MSG="TESTING FOR LOG MSG FROM SERVICES"
+  echo "Injecting '$LOG_MSG' into $CONTAINER..."
+  docker exec "$CONTAINER" sh -c "echo $LOG_MSG > /proc/1/fd/1"
+done
+
 sleep 2
 echo "Logs injected"
