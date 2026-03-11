@@ -7,7 +7,7 @@ ELAPSED=0
 
 echo "Waiting for Fluent Bit to create log files..."
 
-SERVICES=$(docker compose config --services | grep -v fluent-bit)
+SERVICES=$(docker compose config --services | grep -v -E "fluent-bit|loki|grafana)
 EXPECTED=$(echo "$SERVICES" | wc -l | tr -d ' ')
 
 while [ $ELAPSED -lt $TIMEOUT ]; do
