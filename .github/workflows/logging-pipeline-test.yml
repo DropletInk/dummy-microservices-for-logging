@@ -22,8 +22,11 @@ jobs:
         run: docker compose up -d --build || true
 
       - name: Wait for services to be ready
-        run: sleep 10
+        run: sleep 5
       
+      - name: Show Fluent Bit container logs
+        run: docker logs local-fluent-bit || true
+        
       - name: Wait for log files
         run: bash tests/log_files.sh
 
@@ -35,15 +38,12 @@ jobs:
           docker inspect service-a-test | grep LogConfig -A 5
           
       - name: Wait for Fluent Bit to collect logs
-        run: sleep 10
+        run: sleep 5
 
       - name: Show logs directory
         run: |
           echo "Listing log files..."
           ls -R local-logging/logs || true
-
-      - name: Show Fluent Bit container logs
-        run: docker logs local-fluent-bit || true
     
       - name: Verify logs
         run: bash tests/verify_local_logs.sh

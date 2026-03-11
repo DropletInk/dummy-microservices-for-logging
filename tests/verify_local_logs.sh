@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOG_DIR="local-logging/logs"
-TIMEOUT=180
+TIMEOUT=120
 INTERVAL=2
 FAILED=0
 
@@ -45,7 +45,7 @@ for SERVICE in $SERVICES; do
 done
 
 if [ "$FAILED" -eq 1 ]; then
-  echo "Some logs missing — pipeline test FAILED"
+  echo "logs are missing — pipeline test failed"
   exit 1
 fi
 

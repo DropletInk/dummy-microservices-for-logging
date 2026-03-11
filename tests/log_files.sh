@@ -1,13 +1,13 @@
 #!/bin/bash
 
 LOG_DIR="local-logging/logs"
-TIMEOUT=120
+TIMEOUT=60
 INTERVAL=5
 ELAPSED=0
 
 echo "Waiting for Fluent Bit to create log files..."
 
-SERVICES=$(docker compose config --services | grep -v fluent-bit)
+SERVICES=$(docker compose config --services | grep -v -E "fluent-bit|loki|grafana")
 EXPECTED=$(echo "$SERVICES" | wc -l | tr -d ' ')
 
 while [ $ELAPSED -lt $TIMEOUT ]; do

@@ -2,7 +2,7 @@
 
 echo "Injecting logs..."
 
-SERVICES=$(docker compose config --services 2>/dev/null | grep -v fluent-bit)
+SERVICES=$(docker compose config --services 2>/dev/null | grep -v -E "fluent-bit|loki|grafana")
 
 if [ -z "$SERVICES" ]; then
   echo "ERROR: Could not discover services from docker-compose"
