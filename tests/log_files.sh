@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOG_DIR="local-logging/logs"
-TIMEOUT=120
+TIMEOUT=60
 INTERVAL=5
 ELAPSED=0
 
