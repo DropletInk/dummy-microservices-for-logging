@@ -10,7 +10,7 @@ if [ -z "$SERVICES" ]; then
 fi
 
 for SERVICE in $SERVICES; do
-  CONTAINER="${SERVICE}-test"
+  CONTAINER="${SERVICE}"
   LOG_MSG="TESTING FOR LOG MSG FROM SERVICES"
   echo "Injecting '$LOG_MSG' into $CONTAINER."
   docker exec "$CONTAINER" sh -c "echo $LOG_MSG > /proc/1/fd/1"
