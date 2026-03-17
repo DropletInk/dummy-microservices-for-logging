@@ -12,7 +12,7 @@ fi
 for SERVICE in $SERVICES; do
   CONTAINER="${SERVICE}-test"
   LOG_MSG="TESTING FOR LOG MSG FROM SERVICES"
-  echo "Injecting '$LOG_MSG' into $CONTAINER..."
+  echo "Injecting '$LOG_MSG' into $CONTAINER."
   docker exec "$CONTAINER" sh -c "echo $LOG_MSG > /proc/1/fd/1"
 done
 

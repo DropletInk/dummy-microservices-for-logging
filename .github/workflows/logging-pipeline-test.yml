@@ -48,6 +48,9 @@ jobs:
       - name: Verify logs
         run: bash tests/verify_local_logs.sh
 
+      - name: verify central logs
+        run: bash tests/verify_central_logs.sh
+
       - name: Stop microservices
         if: always()
         run: docker compose down || true

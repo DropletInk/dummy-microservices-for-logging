@@ -1,0 +1,12 @@
+services:
+  fluent-bit:
+    image: fluent/fluent-bit:3.1.9
+    container_name: fluent-bit-central
+    ports:
+      -  "5160:5160"
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    command: -c /fluent-bit/etc/fluent-bit.conf
+    restart: always
+    networks:
+      - central_network

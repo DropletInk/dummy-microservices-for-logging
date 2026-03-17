@@ -8,7 +8,7 @@ FAILED=0
 echo "Checking logs collected by local logging agent..."
 
 # Auto-discover all services except fluent-bit
-SERVICES=$(docker compose config --services 2>/dev/null | grep -v fluent-bit)
+SERVICES=$(docker compose config --services 2>/dev/null | grep -v fluent-bit | grep -v fluent-bit-central)
 
 if [ -z "$SERVICES" ]; then
   echo "ERROR: Could not discover services from docker-compose"
