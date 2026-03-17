@@ -22,7 +22,17 @@ services:
     networks:
       - local_network
 
-  fluent-bit:
+  central-fluent-bit:
+    image: fluent/fluent-bit:3.1.9
+    container_name: fluent-bit-central
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    command: -c /fluent-bit/etc/fluent-bit.conf
+    restart: always
+    networks:
+      - central_network
+
+  local-fluent-bit:
     image: fluent/fluent-bit:3.1.9
     container_name: local-fluent-bit
     volumes:
@@ -32,6 +42,8 @@ services:
     networks:
       - local_network
       - central_network
+    depends_on:
+      - central-fluent-bit
  
   # loki:
   #   image: grafana/loki:2.9.4
