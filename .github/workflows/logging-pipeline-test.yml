@@ -18,11 +18,10 @@ jobs:
           sudo systemctl restart docker || true
           sleep 15
       
-
+#added central test
       - name: start central collector container
-        run: cd remote-machine
-             docker compose up -d || true
-             cd .. 
+        run: cd remote-machine | docker compose up -d || true | cd ..
+
       - name: Start all containers
         run: docker compose up -d --build || true
 
