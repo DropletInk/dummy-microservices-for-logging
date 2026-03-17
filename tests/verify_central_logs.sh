@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=60
+TIMEOUT=30
 INTERVAL=5
 ELAPSED=0
 
