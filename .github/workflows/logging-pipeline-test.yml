@@ -35,7 +35,7 @@ jobs:
 
       - name: Check container logging driver
         run: |
-          docker inspect service-a-test | grep LogConfig -A 5
+          docker inspect service-a | grep LogConfig -A 5
           
       - name: Wait for Fluent Bit to collect logs
         run: sleep 5
