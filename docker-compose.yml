@@ -22,11 +22,11 @@ services:
     networks:
       - local_network
 
-  central-fluent-bit:
+  fluent-bit-central:
     image: fluent/fluent-bit:3.1.9
     container_name: fluent-bit-central
     volumes:
-      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./remote-machine/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
     command: -c /fluent-bit/etc/fluent-bit.conf
     restart: always
     networks:
