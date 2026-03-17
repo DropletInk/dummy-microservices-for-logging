@@ -7,7 +7,7 @@ FAILED=0
 
 echo "Checking logs collected by local logging agent..."
 
-SERVICES=$(docker compose config --services 2>/dev/null | grep -v fluent-bit | grep -v fluent-bit-central)
+SERVICES=$(docker compose config --services 2>/dev/null | grep -v local-fluent-bit | grep -v central-fluent-bit)
 
 if [ -z "$SERVICES" ]; then
   echo "ERROR: Could not discover services from docker-compose"
