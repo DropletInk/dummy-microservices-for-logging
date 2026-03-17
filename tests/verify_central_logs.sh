@@ -10,7 +10,7 @@ echo "Verifying logs reached central collector..."
 
 while [ $ELAPSED -lt $TIMEOUT ]; do
 
-  LOGS=$(docker logs fluent-bit-central 2>&1)
+  LOGS=$(docker logs central-fluent-bit 2>&1)
 
   if echo "$LOGS" | grep "$PATTERN" >/dev/null; then
     echo "Logs successfully reached central collector"
