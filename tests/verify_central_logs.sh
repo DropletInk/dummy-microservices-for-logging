@@ -6,12 +6,14 @@ ELAPSED=0
 
 PATTERN="TESTING FOR LOG MSG FROM SERVICES"
 
-echo "Verifying logs at central collector (fluent-bit-central)..."
+echo "Verifying logs reached central collector..."
 
 while [ $ELAPSED -lt $TIMEOUT ]; do
 
-  if docker logs fluent-bit-central 2>&1 | grep "$PATTERN" >/dev/null; then
-    echo "Log successfully reached central collector "
+  LOGS=$(docker logs fluent-bit-central 2>&1)
+
+  if echo "$LOGS" | grep "$PATTERN" >/dev/null; then
+    echo "Logs successfully reached central collector"
     exit 0
   fi
 
@@ -20,5 +22,5 @@ while [ $ELAPSED -lt $TIMEOUT ]; do
   echo "Waiting... ${ELAPSED}s"
 done
 
-echo "ERROR: Log did NOT reach central collector "
+echo "ERROR: Logs did NOT reach central collector"
 exit 1

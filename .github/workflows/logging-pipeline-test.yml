@@ -26,6 +26,9 @@ jobs:
       
       - name: Show Fluent Bit container logs
         run: docker logs local-fluent-bit || true
+
+      - name: Show Central Fluent Bit container logs
+        run: docker logs central-fluent-bit
         
       - name: Wait for log files
         run: bash tests/log_files.sh
