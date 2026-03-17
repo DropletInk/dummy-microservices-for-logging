@@ -40,8 +40,11 @@ services:
       - ./local-logging/logs:/var/log/fluentbit
     command: -c /fluent-bit/etc/fluent-bit.conf
     networks:
+
       - local_network
       - central_network
+    ports:
+      - "24224:24224"
     depends_on:
       - central-fluent-bit
  
