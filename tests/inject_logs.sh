@@ -2,7 +2,7 @@
 
 echo "Injecting logs..."
 
-SERVICES=$(docker compose config --services 2>/dev/null | grep -v -E "fluent-bit|loki|grafana")
+SERVICES=$(docker compose config --services 2>/dev/null | grep -v -E "loki|grafana|central-fluent-bit")
 
 if [ -z "$SERVICES" ]; then
   echo "ERROR: Could not discover services from docker-compose"
@@ -10,9 +10,9 @@ if [ -z "$SERVICES" ]; then
 fi
 
 for SERVICE in $SERVICES; do
-  CONTAINER="${SERVICE}-test"
+  CONTAINER="${SERVICE}"
   LOG_MSG="TESTING FOR LOG MSG FROM SERVICES"
-  echo "Injecting '$LOG_MSG' into $CONTAINER..."
+  echo "Injecting '$LOG_MSG' into $CONTAINER."
   docker exec "$CONTAINER" sh -c "echo $LOG_MSG > /proc/1/fd/1"
 done
 

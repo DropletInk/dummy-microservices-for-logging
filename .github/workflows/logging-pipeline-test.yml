@@ -26,6 +26,9 @@ jobs:
       
       - name: Show Fluent Bit container logs
         run: docker logs local-fluent-bit || true
+
+      - name: Show Central Fluent Bit container logs
+        run: docker logs central-fluent-bit
         
       - name: Wait for log files
         run: bash tests/log_files.sh
@@ -35,7 +38,7 @@ jobs:
 
       - name: Check container logging driver
         run: |
-          docker inspect service-a-test | grep LogConfig -A 5
+          docker inspect service-a | grep LogConfig -A 5
           
       - name: Wait for Fluent Bit to collect logs
         run: sleep 5
@@ -48,11 +51,13 @@ jobs:
       - name: Verify logs
         run: bash tests/verify_local_logs.sh
 
+      - name: verify central logs
+        run: bash tests/verify_central_logs.sh
+
       - name: Stop microservices
         if: always()
         run: docker compose down || true
 
-      - name: Stop local logging agent
+      - name: Remove the volumes
         if: always()
-        working-directory: local-logging/fluent-bit
-        run: docker compose down || true
+        run: docker compose down -v|| true

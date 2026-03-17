@@ -1,49 +1,64 @@
-services:
+networks:
+  local_network:
+  central_network:
 
-  # dind:
-  #   image: docker:24-dind
-  #   container_name: dind-daemon
-  #   privileged: true
-  #   environment:
-  #     DOCKER_TLS_CERTDIR: ""
-  #   command: --host=tcp://0.0.0.0:2375
-  #   ports:
-  #     - "2375:2375"
-  #   volumes:
-  #     - ./logging-test/dind/daemon.json:/etc/docker/daemon.json
+services:
 
   service-a:
     build: ./services/service-a
-    container_name: service-a-test
+    container_name: service-a
+    networks:
+      - local_network
 
   service-b:
     build: ./services/service-b
-    container_name: service-b-test
+    container_name: service-b
+    networks:
+      - local_network
 
   service-c:
     build: ./services/service-c
-    container_name: service-c-test
+    container_name: service-c
+    networks:
+      - local_network
 
-  fluent-bit:
+  central-fluent-bit:
+    image: fluent/fluent-bit:3.1.9
+    container_name: central-fluent-bit
+    volumes:
+      - ./remote-machine/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    command: -c /fluent-bit/etc/fluent-bit.conf
+    restart: always
+    networks:
+      - central_network
+
+  local-fluent-bit:
     image: fluent/fluent-bit:3.1.9
     container_name: local-fluent-bit
-    network_mode: host
     volumes:
       - ./local-logging/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - ./local-logging/logs:/var/log/fluentbit
     command: -c /fluent-bit/etc/fluent-bit.conf
- 
-  loki:
-    image: grafana/loki:2.9.4
-    container_name: loki-test
-    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+
+      - local_network
+      - central_network
     ports:
-      - "3100:3100"
-  
-  grafana:
-    image: grafana/grafana:10.2.2
-    container_name: grafana-test
-    ports:
-    - "3000:3000"
+      - "24224:24224"
     depends_on:
-    - loki
+      - central-fluent-bit
+ 
+  # loki:
+  #   image: grafana/loki:2.9.4
+  #   container_name: loki-test
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   ports:
+  #     - "3100:3100"
+  
+  # grafana:
+  #   image: grafana/grafana:10.2.2
+  #   container_name: grafana-test
+  #   ports:
+  #   - "3000:3000"
+  #   depends_on:
+  #   - loki
