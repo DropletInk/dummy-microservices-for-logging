@@ -55,7 +55,6 @@ jobs:
         if: always()
         run: docker compose down || true
 
-      - name: Stop local logging agent
+      - name: Remove the volumes
         if: always()
-        working-directory: local-logging/fluent-bit
-        run: docker compose down || true
+        run: docker compose down -v|| true
