@@ -1,0 +1,40 @@
+name: Merge Conflict Detection
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Simulate concurrent merge window (TEST ONLY - REMOVE BEFORE MERGE)
+        run: |
+          echo "Waiting 30s — push your conflicting branch now..."
+          sleep 30
+
+      - name: Pull latest develop and check for conflicts
+        run: |
+          echo "Checked out SHA: $(git rev-parse HEAD)"
+          git fetch origin develop
+
+          LATEST=$(git rev-parse origin/main)
+          CURRENT=$(git rev-parse HEAD)
+
+          if [ "$LATEST" = "$CURRENT" ]; then
+            echo "Already at latest develop. No concurrent merges detected."
+            exit 0
+          else
+          echo "Develop branch has new commit."
+          echo "Current SHA : $CURRENT"
+          echo "Latest SHA  : $LATEST"
+          echo "Another branch merged into develop concurrently."
+            exit 1
+          fi
