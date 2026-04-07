@@ -23,7 +23,7 @@ jobs:
       - name: Pull latest develop and check for conflicts
         run: |
           echo "Checked out SHA: $(git rev-parse HEAD)"
-          git fetch origin develop
+          git fetch origin main
 
           LATEST=$(git rev-parse origin/main)
           CURRENT=$(git rev-parse HEAD)
