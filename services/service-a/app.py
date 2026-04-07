@@ -19,6 +19,8 @@ def run():
         logger.info(f"Processing request number {counter}")
         counter += 1
         time.sleep(3)
+        
+print("Hello checking the merge conflict")
 
 if __name__ == "__main__":
     run()
