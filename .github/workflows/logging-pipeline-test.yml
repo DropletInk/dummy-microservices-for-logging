@@ -1,58 +1,72 @@
-name: Test Local Logging Pipeline
+name: End To End Logging Pipeline Test
 
 on:
-  push:
   pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - synchronize
+
+  workflow_run:
+    workflows: ["Merge Conflict Detection"]
+    types: [completed]
 
 jobs:
-  test-local-logging:
+  test-complete-logging-pipeline:
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-    
-      - name: Configure Docker daemon for fluentd logging driver
+
+      - name: Configure Docker daemon
         run: |
-          sudo cp local-logging/daemon.json /etc/docker/daemon.json || true
-          sudo systemctl restart docker || true
+          sudo cp logging_pipeline_tests/daemon.json_conf/daemon.json /etc/docker/daemon.json
+          sudo systemctl restart docker
           sleep 15
-      
+
       - name: Start all containers
-        run: docker compose up -d --build || true
+        run: docker compose -f docker-compose.test.yml up -d
+        env:
+          JWT_SECRET_LOGIN: ${{ secrets.JWT_SECRET_LOGIN }}
+          JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}
+          EMAIL: ${{ secrets.EMAIL }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ${{ vars.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }}
 
-      - name: Wait for services to be ready
-        run: sleep 5
-      
-      - name: Show Fluent Bit container logs
-        run: docker logs local-fluent-bit || true
-        
+      - name: Wait for the services to be ready
+        run: sleep 15
+
+      - name: Check if the services are healthy
+        run: bash logging_pipeline_tests/docker_tests/docker_test.sh
+
       - name: Wait for log files
-        run: bash tests/log_files.sh
+        run: bash logging_pipeline_tests/log_tests/verify_log_files.sh
 
-      - name: Inject logs
-        run: bash tests/inject_logs.sh
+      - name: Inject logs into services
+        run: bash logging_pipeline_tests/log_tests/inject_logs.sh
 
-      - name: Check container logging driver
-        run: |
-          docker inspect service-a-test | grep LogConfig -A 5
-          
       - name: Wait for Fluent Bit to collect logs
         run: sleep 5
 
-      - name: Show logs directory
-        run: |
-          echo "Listing log files..."
-          ls -R local-logging/logs || true
-    
-      - name: Verify logs
-        run: bash tests/verify_local_logs.sh
+      - name: Verify log files
+        run: bash logging_pipeline_tests/log_tests/verify_log_files.sh
 
-      - name: Stop microservices
-        if: always()
-        run: docker compose down || true
+      - name: Wait for Fluent Bit to collect logs
+        run: sleep 15
 
-      - name: Stop local logging agent
+      - name: Verify Local Fluent-bit logs
+        run: bash logging_pipeline_tests/log_tests/verify_local_logs.sh
+
+      - name: Verify Central Fluent-bit logs
+        run: bash logging_pipeline_tests/log_tests/verify_central_logs.sh
+
+      - name: Stop micro-services and Remove the volumes
         if: always()
-        working-directory: local-logging/fluent-bit
-        run: docker compose down || true
+        run: docker compose -f docker-compose.test.yml down -v|| true
